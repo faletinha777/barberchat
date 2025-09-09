@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat de Agendamento - Barbearia Stilo VIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1E1E1E;
+            --chat-bg: #1E1E1E;
+            --text-color: #EAEAEA;
+            --attendant-bubble: #2D2D2D;
+            --client-bubble-gradient: linear-gradient(45deg, #007BFF, #0056b3);
+            --client-bubble-text: #FFFFFF;
+            --button-bg-gradient: linear-gradient(45deg, #007BFF, #0056b3);
+            --button-hover-gradient: linear-gradient(45deg, #0069d9, #004085);
+            --button-text: #FFFFFF;
+            --input-bg: #2D2D2D;
+            --input-border: #444;
+            --input-text: #EAEAEA;
+            --header-bg: #1E1E1E;
+            --header-text: #FFFFFF;
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes dotFlashing {
+            0% { background-color: #6b6b6b; }
+            50%, 100% { background-color: #2D2D2D; }
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(-45deg, #0a0a0a, #1a1a1a, #2a2a2a, #121212);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #chat-container {
+            width: 95%;
+            max-width: 600px;
+            height: 90vh;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            background-color: var(--secondary-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #chat-header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--chat-bg);
+        }
+
+        #chat-messages::-webkit-scrollbar { width: 8px; }
+        #chat-messages::-webkit-scrollbar-track { background: var(--secondary-bg); }
+        #chat-messages::-webkit-scrollbar-thumb { background-color: #555; border-radius: 4px; }
+
+        .message {
+            padding: 12px 18px;
+            border-radius: 25px;
+            max-width: 80%;
+            line-height: 1.5;
+            word-wrap: break-word;
+            font-size: 0.95em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .attendant-message {
+            background-color: var(--attendant-bubble);
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .client-message {
+            background: var(--client-bubble-gradient);
+            color: var(--client-bubble-text);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        #chat-input-area {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+            background-color: var(--secondary-bg);
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            border: 1px solid var(--input-border);
+            border-radius: 25px;
+            padding: 12px 18px;
+            font-size: 1em;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #chat-input:focus { border-color: #007BFF; }
+
+        #send-button {
+            border: none;
+            background: var(--button-bg-gradient);
+            color: var(--button-text);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s, transform 0.2s, opacity 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #send-button:hover { background: var(--button-hover-gradient); transform: scale(1.1); }
+        #send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .options-container {
+            display: flex; flex-direction: column; gap: 10px;
+            margin-top: 15px; align-self: flex-start; width: 100%;
+        }
+
+        .option-button {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            padding: 12px 18px; border-radius: 25px; cursor: pointer;
+            text-align: left; font-size: 0.95em;
+            transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            width: 100%; display: flex; align-items: center;
+        }
+
+        .option-button:hover {
+            background-color: var(--attendant-bubble);
+            border-color: #007BFF;
+            transform: translateY(-2px);
+        }
+
+        .typing-indicator {
+            display: flex; align-items: center; gap: 5px;
+            padding: 12px 18px;
+            background-color: var(--attendant-bubble);
+            border-radius: 25px;
+            border-bottom-left-radius: 5px;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        .typing-indicator span {
+            height: 8px; width: 8px;
+            border-radius: 50%;
+            background-color: #6b6b6b;
+            animation: dotFlashing 1s infinite linear alternate;
+        }
+        .typing-indicator span:nth-of-type(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-of-type(3) { animation-delay: 0.4s; }
+
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="chat-header">
+        <i class="fa-solid fa-cut"></i>
+        <span>Barbearia Stilo VIP</span>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+        <button id="send-button" onclick="handleUserInput()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const inputArea = document.getElementById('chat-input-area');
+const sendButton = document.getElementById('send-button');
+
+let currentStep = 'welcome';
+let typingIndicator;
+const appointment = { name: '', service: '', date: '', time: '', phone: '' };
+const services = [
+    { name: 'Corte Degradê', price: 'R$25,00', duration: '30min' },
+    { name: 'Low Fade', price: 'R$25,00', duration: '30min' },
+    { name: 'Degradê + Sobrancelha', price: 'R$30,00', duration: '30min' }
+];
+const availableTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+
+window.onload = () => {
+    addAttendantMessage("Olá! Bem-vindo à Barbearia Stilo VIP. Para começarmos, qual o seu nome?");
+    chatInput.focus();
+    updateSendButtonState();
+};
+
+chatInput.addEventListener('input', updateSendButtonState);
+chatInput.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter' && !sendButton.disabled) handleUserInput();
+});
+
+function updateSendButtonState() {
+    sendButton.disabled = chatInput.value.trim() === '';
+}
+
+function showTypingIndicator() {
+    typingIndicator = document.createElement('div');
+    typingIndicator.className = 'typing-indicator';
+    typingIndicator.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(typingIndicator);
+    scrollToBottom();
+}
+
+function hideTypingIndicator() {
+    if (typingIndicator) {
+        chatMessages.removeChild(typingIndicator);
+        typingIndicator = null;
+    }
+}
+
+function addAttendantMessage(message, options = []) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message attendant-message';
+    messageDiv.innerHTML = message;
+    
+    if (options.length > 0) {
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'options-container';
+        options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.innerText = option.text;
+            button.onclick = () => handleOptionClick(option.value, option.text);
+            optionsContainer.appendChild(button);
+        });
+        messageDiv.appendChild(optionsContainer);
+    }
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+function addClientMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message client-message';
+    messageDiv.innerText = message;
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+}
+
+function handleUserInput() {
+    const message = chatInput.value.trim();
+    if (message === '') return;
+    addClientMessage(message);
+    chatInput.value = '';
+    updateSendButtonState();
+    processStep(message);
+}
+
+function handleOptionClick(value, text) {
+    addClientMessage(text);
+    processStep(value);
+}
+
+function processStep(userInput) {
+    inputArea.style.display = 'none';
+    showTypingIndicator();
+
+    setTimeout(() => {
+        hideTypingIndicator();
+        switch (currentStep) {
+            case 'welcome':
+                appointment.name = userInput;
+                addAttendantMessage(`Prazer, ${appointment.name}! Qual serviço você gostaria de agendar hoje?`);
+                showServiceOptions();
+                currentStep = 'get_service';
+                break;
+            case 'get_service':
+                const selectedService = services.find(s => s.name === userInput);
+                appointment.service = selectedService.name;
+                addAttendantMessage('Ótima escolha! Agora, por favor, escolha uma data para o seu agendamento.');
+                showDateOptions();
+                currentStep = 'get_date';
+                break;
+            case 'get_date':
+                appointment.date = userInput;
+                addAttendantMessage(`Perfeito. Agora, escolha um dos horários disponíveis para ${appointment.date}:`);
+                showTimeOptions();
+                currentStep = 'get_time';
+                break;
+            case 'get_time':
+                appointment.time = userInput;
+                addAttendantMessage('Estamos quase lá! Por favor, digite seu número de telefone com DDD para contato.');
+                inputArea.style.display = 'flex';
+                chatInput.type = 'tel';
+                chatInput.placeholder = 'Digite seu telefone...';
+                chatInput.focus();
+                updateSendButtonState();
+                currentStep = 'get_phone';
+                break;
+            case 'get_phone':
+                if (userInput.replace(/\D/g, '').length >= 9) {
+                    appointment.phone = userInput;
+                    showConfirmation();
+                    currentStep = 'confirmation';
+                } else {
+                    addAttendantMessage('Por favor, insira um número de telefone válido (mínimo 9 dígitos).');
+                    inputArea.style.display = 'flex';
+                    chatInput.focus();
+                    updateSendButtonState();
+                }
+                break;
+            case 'confirmation':
+                if (userInput.toLowerCase() === 'sim') {
+                    addAttendantMessage(`Agendamento confirmado! Esperamos por você, ${appointment.name}. Tenha um ótimo dia!`);
+                    inputArea.style.display = 'none';
+                } else {
+                    addAttendantMessage('Seu agendamento foi cancelado. Se precisar, é só chamar novamente!');
+                    inputArea.style.display = 'none';
+                }
+                currentStep = 'finished';
+                break;
+        }
+    }, 1200); // Aumentei o tempo para o indicador de digitação ser mais perceptível
+}
+
+function showServiceOptions() {
+    const options = services.map(service => ({
+        text: `${service.name} – ${service.price} – ${service.duration}`,
+        value: service.name
+    }));
+    addAttendantMessage('', options);
+}
+
+function showDateOptions() {
+    const today = new Date();
+    const weekDays = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    const options = [];
+    for (let i = 1; i <= 5; i++) {
+        const nextDay = new Date(today);
+        nextDay.setDate(today.getDate() + i);
+        if (nextDay.getDay() !== 0) { // Pula Domingos
+             options.push({
+                text: `${weekDays[nextDay.getDay()]} (${nextDay.toLocaleDateString('pt-BR')})`,
+                value: nextDay.toLocaleDateString('pt-BR')
+            });
+        }
+    }
+    addAttendantMessage('', options);
+}
+
+function showTimeOptions() {
+    const options = availableTimes.map(time => ({ text: time, value: time }));
+    addAttendantMessage('', options);
+}
+
+function showConfirmation() {
+    const summary = `
+        <strong>Confirme seu Agendamento:</strong><br><br>
+        - <strong>Nome:</strong> ${appointment.name}<br>
+        - <strong>Serviço:</strong> ${appointment.service}<br>
+        - <strong>Data:</strong> ${appointment.date}<br>
+        - <strong>Horário:</strong> ${appointment.time}<br>
+        - <strong>Telefone:</strong> ${appointment.phone}<br><br>
+        Está tudo certo?
+    `;
+    const options = [
+        { text: 'Sim, confirmar', value: 'sim' },
+        { text: 'Não, cancelar', value: 'não' }
+    ];
+    addAttendantMessage(summary, options);
+}
+
+function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+</script>
+
+</body>
+</html>
