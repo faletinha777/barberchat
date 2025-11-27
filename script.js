@@ -1,8 +1,5 @@
-/* * BARBERCHAT V4.0 - Versão Final
- * Features: Agendamento Completo, Ticket Digital, Modo Escuro, Avaliação 5 Estrelas
- */
 
-const BARBERSHOP_PHONE = "5511999999999"; 
+const BARBERSHOP_PHONE = "5531973216604"; 
 
 const DB_SERVICES = [
     { name: 'Corte Degradê', price: 'R$ 35,00', icon: 'fa-user' },
@@ -19,7 +16,7 @@ let currentState = {
 
 const STEPS_MAP = ['welcome', 'get_service', 'get_date', 'get_time', 'get_phone', 'confirmation', 'finished'];
 
-// Elementos DOM
+
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-button');
 const chatMessages = document.getElementById('chat-messages');
@@ -27,7 +24,7 @@ const inputArea = document.getElementById('chat-input-area');
 const progressBar = document.getElementById('progress-bar');
 const themeBtn = document.getElementById('theme-toggle');
 
-// --- INICIALIZAÇÃO ---
+
 window.onload = async () => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') applyTheme('light');
@@ -56,7 +53,7 @@ window.onload = async () => {
     }
 };
 
-// --- CONTROLE DE TEMA ---
+
 window.toggleTheme = function() {
     const isLight = document.body.classList.contains('light-theme');
     const newTheme = isLight ? 'dark' : 'light';
@@ -77,7 +74,7 @@ function applyTheme(theme) {
     }
 }
 
-// --- EVENTOS ---
+
 chatInput.addEventListener('input', (e) => {
     if (currentState.stepName === 'get_phone') maskPhone(e.target);
     sendBtn.disabled = e.target.value.trim() === '';
@@ -88,7 +85,7 @@ chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !sendBtn.disabled) handleUserInput();
 });
 
-// --- LÓGICA PRINCIPAL ---
+
 async function handleUserInput() {
     const text = chatInput.value.trim();
     if (!text) return;
@@ -162,7 +159,7 @@ async function processStep(text) {
     }
 }
 
-// --- FUNÇÕES AUXILIARES ---
+
 function fakeApiDelay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 function advanceStep(nextStepName) {
@@ -222,7 +219,7 @@ function createTicket(data, final = false) {
     scrollToBottom();
 }
 
-// [NOVO] Lógica de Avaliação
+
 function showRatingSystem() {
     const div = document.createElement('div');
     div.className = 'rating-container';
@@ -239,21 +236,21 @@ function showRatingSystem() {
     chatMessages.appendChild(div);
     scrollToBottom();
 
-    // Adiciona eventos de clique nas estrelas
+   
     const stars = div.querySelectorAll('.star');
     stars.forEach(star => {
         star.addEventListener('click', () => {
-            // Pinta as estrelas
+            
             const value = star.getAttribute('data-value');
             stars.forEach(s => {
                 s.classList.remove('active');
                 if(s.getAttribute('data-value') <= value) s.classList.add('active');
             });
             
-            // Mensagem de agradecimento
+            
             setTimeout(() => {
                 div.innerHTML = `<div class="rating-thanks"><i class="fa-solid fa-heart"></i> Obrigado pela avaliação!</div>`;
-                // Botão final do WhatsApp
+                
                 showWhatsAppButton();
             }, 500);
         });

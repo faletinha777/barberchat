@@ -1,9 +1,9 @@
 :root {
-    /* Variáveis - Modo Escuro (Padrão) */
+    
     --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     --glass-bg: rgba(30, 30, 30, 0.75);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --primary-color: #d4af37; /* Dourado */
+    --primary-color: #d4af37; 
     --text-color: #f5f5f5;
     --attendant-bg: rgba(255, 255, 255, 0.1);
     --client-bg: linear-gradient(135deg, #d4af37, #c5a028);
@@ -13,12 +13,12 @@
     --ticket-text: #333;
 }
 
-/* [NOVO] Variáveis - Modo Claro */
+
 .light-theme {
     --bg-gradient: linear-gradient(135deg, #f5f7fa, #c3cfe2);
     --glass-bg: rgba(255, 255, 255, 0.85);
     --glass-border: rgba(0, 0, 0, 0.05);
-    --primary-color: #b8860b; /* Dourado mais escuro para contraste */
+    --primary-color: #b8860b; 
     --text-color: #333;
     --attendant-bg: rgba(0, 0, 0, 0.05);
     --client-bg: linear-gradient(135deg, #b8860b, #daa520);
@@ -46,9 +46,9 @@ body {
     width: 100%;
     max-width: 500px;
     
-    /* CORREÇÃO PRINCIPAL AQUI: */
-    height: 100vh; /* Fallback para navegadores antigos */
-    height: 100dvh; /* Altura dinâmica que respeita a barra do Safari */
+    
+    height: 100vh; 
+    height: 100dvh; 
     
     max-height: 900px;
     background: var(--glass-bg);
@@ -61,7 +61,7 @@ body {
     transition: background 0.3s;
 }
 
-/* Header */
+
 #chat-header {
     padding: 20px 20px 10px 20px;
     background: rgba(0, 0, 0, 0.05);
@@ -85,7 +85,7 @@ body {
 }
 .icon-btn:hover { opacity: 1; transform: scale(1.1); }
 
-/* Barra de Progresso */
+
 .progress-container {
     width: 100%; height: 6px; background: rgba(128, 128, 128, 0.2);
     border-radius: 10px; overflow: hidden;
@@ -96,7 +96,7 @@ body {
     transition: width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Mensagens */
+
 #chat-messages {
     flex-grow: 1; padding: 20px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth;
@@ -126,7 +126,7 @@ body {
     color: var(--text-color); opacity: 0.7; letter-spacing: 0.5px;
 }
 
-/* [NOVO] TICKET DIGITAL ESTILO */
+
 .ticket-container {
     background: var(--ticket-bg); color: var(--ticket-text);
     width: 100%; padding: 20px; border-radius: 15px;
@@ -149,7 +149,7 @@ body {
 .cutout-left { left: -10px; }
 .cutout-right { right: -10px; }
 
-/* Inputs e Botões */
+
 .options-grid { display: grid; gap: 8px; margin-top: 10px; width: 100%; }
 .option-button {
     background: var(--attendant-bg); border: 1px solid var(--glass-border);
@@ -165,17 +165,16 @@ body {
 #chat-input-area {
     padding: 15px 20px;
     
-    /* O SEGREDO ESTÁ AQUI EMBAIXO: */
-    /* Adiciona 30px fixos + a área segura do iPhone (env) */
+    
     padding-bottom: calc(30px + env(safe-area-inset-bottom));
     
-    background: rgba(0, 0, 0, 0.2); /* Fundo um pouco mais escuro para destacar */
+    background: rgba(0, 0, 0, 0.2); 
     border-top: 1px solid var(--glass-border);
     display: flex;
     gap: 12px;
     align-items: center;
-    flex-shrink: 0; /* Garante que essa área nunca encolha */
-    z-index: 20; /* Garante que fique acima de tudo */
+    flex-shrink: 0; 
+    z-index: 20; 
 }
 #chat-input {
     flex-grow: 1; background: var(--input-bg); border: 1px solid var(--glass-border);
@@ -192,7 +191,7 @@ body {
 }
 #send-button:disabled { background: #888; opacity: 0.5; cursor: default; }
 
-/* Animações */
+
 .typing-indicator {
     padding: 15px; background: var(--attendant-bg); border-radius: 18px;
     border-bottom-left-radius: 4px; width: fit-content; display: flex; gap: 4px; margin-bottom: 10px;
@@ -233,18 +232,18 @@ body {
 }
 
 .star {
-    color: #555; /* Cor da estrela vazia */
+    color: #555; 
     transition: all 0.2s;
 }
 
 .star:hover,
 .star.active {
-    color: #ffd700; /* Dourado */
+    color: #ffd700; 
     transform: scale(1.2);
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-/* Animação de agradecimento */
+
 .rating-thanks {
     color: var(--success-color);
     font-weight: bold;
