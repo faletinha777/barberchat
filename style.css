@@ -200,3 +200,46 @@ body {
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
+
+.rating-container {
+    background: var(--attendant-bg);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+    margin-top: 10px;
+    border: 1px solid var(--glass-border);
+    animation: popIn 0.5s ease;
+}
+
+.rating-title {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.stars-box {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.star {
+    color: #555; /* Cor da estrela vazia */
+    transition: all 0.2s;
+}
+
+.star:hover,
+.star.active {
+    color: #ffd700; /* Dourado */
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Animação de agradecimento */
+.rating-thanks {
+    color: var(--success-color);
+    font-weight: bold;
+    animation: popIn 0.5s;
+}

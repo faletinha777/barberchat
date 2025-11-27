@@ -1,5 +1,5 @@
-/* * BARBERCHAT V3.0 - Javascript Completo
- * Features: Async Flow, LocalStorage Persistence, Dark/Light Theme, Digital Ticket Generation
+/* * BARBERCHAT V4.0 - Versão Final
+ * Features: Agendamento Completo, Ticket Digital, Modo Escuro, Avaliação 5 Estrelas
  */
 
 const BARBERSHOP_PHONE = "5511999999999"; 
@@ -17,7 +17,7 @@ let currentState = {
     data: { name: '', service: '', date: '', time: '', phone: '' }
 };
 
-const STEPS_MAP = ['welcome', 'get_service', 'get_date', 'get_time', 'get_phone', 'confirmation'];
+const STEPS_MAP = ['welcome', 'get_service', 'get_date', 'get_time', 'get_phone', 'confirmation', 'finished'];
 
 // Elementos DOM
 const chatInput = document.getElementById('chat-input');
@@ -29,18 +29,15 @@ const themeBtn = document.getElementById('theme-toggle');
 
 // --- INICIALIZAÇÃO ---
 window.onload = async () => {
-    // 1. Carrega Tema Salvo
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') applyTheme('light');
     
     updateProgressBar();
     
-    // 2. Saudação Temporal
     const greeting = getTimeGreeting();
     await fakeApiDelay(600); 
     addMessage("bot", `Olá, ${greeting}! Bem-vindo à **Barbearia Stilo VIP**.`);
 
-    // 3. Verifica Usuário
     const savedName = localStorage.getItem('clientName');
     if (savedName) {
         currentState.data.name = savedName;
@@ -59,7 +56,7 @@ window.onload = async () => {
     }
 };
 
-// --- CONTROLE DE TEMA (DARK/LIGHT) ---
+// --- CONTROLE DE TEMA ---
 window.toggleTheme = function() {
     const isLight = document.body.classList.contains('light-theme');
     const newTheme = isLight ? 'dark' : 'light';
@@ -80,7 +77,7 @@ function applyTheme(theme) {
     }
 }
 
-// --- EVENTOS DE INPUT ---
+// --- EVENTOS ---
 chatInput.addEventListener('input', (e) => {
     if (currentState.stepName === 'get_phone') maskPhone(e.target);
     sendBtn.disabled = e.target.value.trim() === '';
@@ -91,7 +88,7 @@ chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !sendBtn.disabled) handleUserInput();
 });
 
-// --- FLUXO PRINCIPAL (ASYNC) ---
+// --- LÓGICA PRINCIPAL ---
 async function handleUserInput() {
     const text = chatInput.value.trim();
     if (!text) return;
@@ -107,7 +104,6 @@ async function processStep(text) {
     showTyping();
     inputArea.style.display = 'none';
 
-    // Simula tempo de "pensamento" do bot
     await fakeApiDelay(Math.floor(Math.random() * 800) + 600);
 
     removeTyping();
@@ -166,7 +162,7 @@ async function processStep(text) {
     }
 }
 
-// --- FUNÇÕES DE LÓGICA ---
+// --- FUNÇÕES AUXILIARES ---
 function fakeApiDelay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 function advanceStep(nextStepName) {
@@ -195,17 +191,13 @@ function filterTimesByTime(dateString) {
 
 function confirmAppointment() {
     advanceStep('confirmation');
-    // Em vez de texto simples, cria um mini resumo
     addMessage('bot', "Confira se está tudo certo:", [
         { text: '✅ Confirmar', value: 'confirm' },
         { text: '❌ Cancelar', value: 'cancel' }
     ]);
-    // Mostra o Ticket de Prévia
     createTicket(currentState.data, false); 
-    inputArea.style.display = 'none';
 }
 
-// [NOVO] GERADOR DE TICKET DIGITAL
 function createTicket(data, final = false) {
     const ticket = document.createElement('div');
     ticket.className = 'ticket-container';
@@ -221,17 +213,71 @@ function createTicket(data, final = false) {
             <div class="ticket-row"><span class="ticket-label">Serviço:</span> <span class="ticket-value">${data.service}</span></div>
             <div class="ticket-row"><span class="ticket-label">Data:</span> <span class="ticket-value">${data.date}</span></div>
             <div class="ticket-row"><span class="ticket-label">Horário:</span> <span class="ticket-value">${data.time}</span></div>
-            <div class="ticket-row"><span class="ticket-label">Tel:</span> <span class="ticket-value">${data.phone}</span></div>
         </div>
         <div class="ticket-footer">
-            ${final ? '<i class="fa-solid fa-barcode"></i> 12345-STILO-VIP' : 'Confirme abaixo para gerar seu passe.'}
+            ${final ? '<i class="fa-solid fa-barcode"></i> 12345-STILO-VIP' : 'Confirme para gerar seu passe.'}
         </div>
     `;
     chatMessages.appendChild(ticket);
     scrollToBottom();
 }
 
-// Sobrescrita do ProcessStep final
+// [NOVO] Lógica de Avaliação
+function showRatingSystem() {
+    const div = document.createElement('div');
+    div.className = 'rating-container';
+    div.innerHTML = `
+        <div class="rating-title">Avalie nossa experiência:</div>
+        <div class="stars-box">
+            <i class="fa-solid fa-star star" data-value="1"></i>
+            <i class="fa-solid fa-star star" data-value="2"></i>
+            <i class="fa-solid fa-star star" data-value="3"></i>
+            <i class="fa-solid fa-star star" data-value="4"></i>
+            <i class="fa-solid fa-star star" data-value="5"></i>
+        </div>
+    `;
+    chatMessages.appendChild(div);
+    scrollToBottom();
+
+    // Adiciona eventos de clique nas estrelas
+    const stars = div.querySelectorAll('.star');
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            // Pinta as estrelas
+            const value = star.getAttribute('data-value');
+            stars.forEach(s => {
+                s.classList.remove('active');
+                if(s.getAttribute('data-value') <= value) s.classList.add('active');
+            });
+            
+            // Mensagem de agradecimento
+            setTimeout(() => {
+                div.innerHTML = `<div class="rating-thanks"><i class="fa-solid fa-heart"></i> Obrigado pela avaliação!</div>`;
+                // Botão final do WhatsApp
+                showWhatsAppButton();
+            }, 500);
+        });
+    });
+}
+
+function showWhatsAppButton() {
+    const msg = `Olá! Gostaria de agendar:\n*Cliente:* ${currentState.data.name}\n*Serviço:* ${currentState.data.service}\n*Data:* ${currentState.data.date}\n*Horário:* ${currentState.data.time}`;
+    const link = `https://wa.me/${BARBERSHOP_PHONE}?text=${encodeURIComponent(msg)}`;
+    
+    const btn = document.createElement('button');
+    btn.className = 'option-button';
+    btn.style.background = '#25D366';
+    btn.style.color = '#fff';
+    btn.style.marginTop = '15px';
+    btn.style.width = '100%';
+    btn.style.justifyContent = 'center';
+    btn.innerHTML = '<span>Finalizar no WhatsApp</span> <i class="fa-brands fa-whatsapp"></i>';
+    btn.onclick = () => window.open(link, '_blank');
+    chatMessages.appendChild(btn);
+    scrollToBottom();
+}
+
+// Processo Final Atualizado
 const _originalProcess = processStep;
 processStep = async function(text) {
     if (currentState.stepName === 'confirmation') {
@@ -241,26 +287,15 @@ processStep = async function(text) {
 
         if (text === 'confirm') {
             saveToHistory();
-            
-            // Remove botões de opção anteriores
             document.querySelectorAll('.option-button').forEach(b => b.remove());
             
-            // Gera o Ticket Final
             createTicket(currentState.data, true);
+            advanceStep('finished');
             
-            addMessage('bot', "Tudo pronto! 🚀\nClique abaixo para finalizar no WhatsApp.");
-
-            const msg = `Olá! Meu Agendamento:\n*${currentState.data.name}*\n*${currentState.data.service}*\n*${currentState.data.date}* às *${currentState.data.time}*`;
-            const link = `https://wa.me/${BARBERSHOP_PHONE}?text=${encodeURIComponent(msg)}`;
+            addMessage('bot', "Agendamento realizado com sucesso! 🎉");
             
-            const btn = document.createElement('button');
-            btn.className = 'option-button';
-            btn.style.background = '#25D366';
-            btn.style.color = '#fff';
-            btn.innerHTML = '<span>Abrir WhatsApp</span> <i class="fa-brands fa-whatsapp"></i>';
-            btn.onclick = () => window.open(link, '_blank');
-            chatMessages.appendChild(btn);
-            scrollToBottom();
+            await fakeApiDelay(800);
+            showRatingSystem(); // Chama a avaliação
             
         } else {
             addMessage('bot', "Agendamento cancelado. Reinicie para tentar de novo.");
@@ -270,7 +305,7 @@ processStep = async function(text) {
     }
 }
 
-// Helpers
+// Helpers UI & Utils
 function addMessage(sender, text, options = null) {
     const div = document.createElement('div');
     div.className = `message ${sender === 'bot' ? 'attendant-message' : 'client-message'}`;
@@ -290,7 +325,7 @@ function addMessage(sender, text, options = null) {
         chatMessages.appendChild(optionsDiv);
     }
     scrollToBottom();
-    if (sender === 'bot' && !options && currentState.stepName !== 'confirmation') {
+    if (sender === 'bot' && !options && currentState.stepName !== 'confirmation' && currentState.stepName !== 'finished') {
          inputArea.style.display = 'flex';
          setTimeout(() => chatInput.focus(), 100);
     }
