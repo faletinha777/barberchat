@@ -45,7 +45,11 @@ body {
 #chat-container {
     width: 100%;
     max-width: 500px;
-    height: 100vh;
+    
+    /* CORREÇÃO PRINCIPAL AQUI: */
+    height: 100vh; /* Fallback para navegadores antigos */
+    height: 100dvh; /* Altura dinâmica que respeita a barra do Safari */
+    
     max-height: 900px;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
@@ -55,14 +59,6 @@ body {
     position: relative;
     box-shadow: 0 0 50px rgba(0,0,0,0.2);
     transition: background 0.3s;
-}
-
-@media (min-width: 501px) {
-    #chat-container {
-        height: 90vh;
-        border-radius: 24px;
-        border: 1px solid var(--glass-border);
-    }
 }
 
 /* Header */
@@ -167,8 +163,18 @@ body {
 }
 
 #chat-input-area {
-    padding: 15px 20px; background: rgba(0, 0, 0, 0.05);
-    border-top: 1px solid var(--glass-border); display: flex; gap: 12px; align-items: center;
+    /* Ajuste no padding para dar espaço extra no iPhone */
+    padding: 15px 20px;
+    padding-bottom: calc(15px + env(safe-area-inset-bottom)); /* Protege contra a barra do iPhone */
+    
+    background: rgba(0, 0, 0, 0.05);
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    
+    /* Garante que fique fixo no fundo visualmente */
+    flex-shrink: 0; 
 }
 #chat-input {
     flex-grow: 1; background: var(--input-bg); border: 1px solid var(--glass-border);
