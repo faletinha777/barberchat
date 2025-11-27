@@ -163,18 +163,19 @@ body {
 }
 
 #chat-input-area {
-    /* Ajuste no padding para dar espaço extra no iPhone */
     padding: 15px 20px;
-    padding-bottom: calc(15px + env(safe-area-inset-bottom)); /* Protege contra a barra do iPhone */
     
-    background: rgba(0, 0, 0, 0.05);
+    /* O SEGREDO ESTÁ AQUI EMBAIXO: */
+    /* Adiciona 30px fixos + a área segura do iPhone (env) */
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
+    
+    background: rgba(0, 0, 0, 0.2); /* Fundo um pouco mais escuro para destacar */
     border-top: 1px solid var(--glass-border);
     display: flex;
     gap: 12px;
     align-items: center;
-    
-    /* Garante que fique fixo no fundo visualmente */
-    flex-shrink: 0; 
+    flex-shrink: 0; /* Garante que essa área nunca encolha */
+    z-index: 20; /* Garante que fique acima de tudo */
 }
 #chat-input {
     flex-grow: 1; background: var(--input-bg); border: 1px solid var(--glass-border);
