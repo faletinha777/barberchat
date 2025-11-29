@@ -1,0 +1,13 @@
+2025/11/29-13:03:39.137 eec Reusing MANIFEST C:\Users\falet\OneDrive\Área de Trabalho\chatbarber\backend-barbearia\tokens\barbearia-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/11/29-13:03:39.138 eec Recovering log #112
+2025/11/29-13:03:39.146 eec Reusing old log C:\Users\falet\OneDrive\Área de Trabalho\chatbarber\backend-barbearia\tokens\barbearia-session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000112.log 
+2025/11/29-13:03:40.202 417c Level-0 table #117: started
+2025/11/29-13:03:40.219 417c Level-0 table #117: 189819 bytes OK
+2025/11/29-13:03:40.222 417c Delete type=0 #112
+2025/11/29-13:03:40.223 2f58 Manual compaction at level-0 from '\x000\x00\x00\x00' @ 72057594037927935 : 1 .. '\x001\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/11/29-13:03:42.586 eec Compacting 1@1 + 1@2 files
+2025/11/29-13:03:42.675 eec Generated table #118@1: 43920 keys, 1503142 bytes
+2025/11/29-13:03:42.675 eec Compacted 1@1 + 1@2 files => 1503142 bytes
+2025/11/29-13:03:42.678 eec compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/11/29-13:03:42.679 eec Delete type=2 #114
+2025/11/29-13:03:42.679 eec Delete type=2 #117
